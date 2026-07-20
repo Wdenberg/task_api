@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: todo-list-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tododb
+    username: admin
+    password: adminpassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update # Em produção usaríamos 'validate' ou Flyway/Liquibase
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
