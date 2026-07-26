@@ -1,7 +1,7 @@
-package com.wdenberg.dto;
+package com.wdenberg.task.dto;
 
-import com.wdenberg.domain.model.Task;
-import com.wdenberg.domain.model.TaskStatus;
+import com.wdenberg.task.domain.model.Task;
+import com.wdenberg.task.domain.model.TaskStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package com.wdenberg.domain.model;
+package com.wdenberg.task.domain.model;
 
 
-import com.wdenberg.dto.TaskUpdateRequest;
+import com.wdenberg.task.dto.TaskUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 

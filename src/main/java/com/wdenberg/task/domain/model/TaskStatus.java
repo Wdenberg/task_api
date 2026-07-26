@@ -1,4 +1,4 @@
-package com.wdenberg.domain.model;
+package com.wdenberg.task.domain.model;
 
 public enum TaskStatus {
     PENDING("Pendente"),

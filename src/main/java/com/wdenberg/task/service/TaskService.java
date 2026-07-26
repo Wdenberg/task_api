@@ -1,13 +1,13 @@
-package com.wdenberg.service;
+package com.wdenberg.task.service;
 
 
-import com.wdenberg.domain.model.Task;
-import com.wdenberg.domain.model.TaskStatus;
-import com.wdenberg.domain.repository.TaskRepository;
-import com.wdenberg.dto.TaskCreteRequest;
-import com.wdenberg.dto.TaskResponse;
-import com.wdenberg.dto.TaskUpdateRequest;
-import com.wdenberg.exception.TaskNotFoundException;
+import com.wdenberg.task.domain.model.Task;
+import com.wdenberg.task.domain.model.TaskStatus;
+import com.wdenberg.task.domain.repository.TaskRepository;
+import com.wdenberg.task.dto.TaskCreteRequest;
+import com.wdenberg.task.dto.TaskResponse;
+import com.wdenberg.task.dto.TaskUpdateRequest;
+import com.wdenberg.task.exception.TaskNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

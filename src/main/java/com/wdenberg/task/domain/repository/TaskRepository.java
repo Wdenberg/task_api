@@ -1,7 +1,7 @@
-package com.wdenberg.domain.repository;
+package com.wdenberg.task.domain.repository;
 
-import com.wdenberg.domain.model.Task;
-import com.wdenberg.domain.model.TaskStatus;
+import com.wdenberg.task.domain.model.Task;
+import com.wdenberg.task.domain.model.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +19,5 @@ public interface TaskRepository  extends JpaRepository<Task, UUID> {
     List<Task> findByTitleContainsIgnoreCase(String title);
 
     // Buascar Task Atrasadas
-    List<Task> findDueDateBeForeAndStatusNor(java.time.LocalDateTime now, TaskStatus status);
+    List<Task> findByDueDateBeforeAndStatusNot(java.time.LocalDateTime now, TaskStatus status);
 }

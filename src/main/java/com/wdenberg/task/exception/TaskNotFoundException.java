@@ -1,4 +1,4 @@
-package com.wdenberg.exception;
+package com.wdenberg.task.exception;
 
 import java.util.UUID;
 

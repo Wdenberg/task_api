@@ -1,4 +1,4 @@
-package com.wdenberg.dto;
+package com.wdenberg.task.dto;
 
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;

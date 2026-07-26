@@ -1,6 +1,6 @@
-package com.wdenberg.dto;
+package com.wdenberg.task.dto;
 
-import com.wdenberg.domain.model.TaskStatus;
+import com.wdenberg.task.domain.model.TaskStatus;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
