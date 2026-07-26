@@ -1,6 +1,7 @@
 package com.wdenberg.domain.model;
 
 
+import com.wdenberg.dto.TaskUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,6 +54,25 @@ public class Task {
     @PreUpdate
     protected void onUpdate(){
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void update(TaskUpdateRequest request){
+
+        if(request.title() != null && !request.title().isBlank()){
+            this.title = request.title();
+        }
+
+        if(request.description() != null){
+            this.description = request.description();
+        }
+
+        if(request.status() != null){
+            this.status = request.status();
+        }
+
+        if(request.dueDate() != null){
+            this.dueDate = request.dueDate();
+        }
     }
 
 }
