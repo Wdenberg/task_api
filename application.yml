@@ -3,14 +3,14 @@ spring:
     name: todo-list-api
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/tododb
-    username: admin
-    password: adminpassword
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update # Em produção usaríamos 'validate' ou Flyway/Liquibase
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -18,4 +18,4 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 server:
-  port: 8080
+  port: ${PORT:8080}
