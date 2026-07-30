@@ -22,6 +22,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(nullable = false, length = 100)
     private String title;
 
@@ -41,6 +45,7 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+
     // CallBacks de Ciclo de vida JPA
 
     @PrePersist
@@ -56,23 +61,6 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void update(TaskUpdateRequest request){
 
-        if(request.title() != null && !request.title().isBlank()){
-            this.title = request.title();
-        }
-
-        if(request.description() != null){
-            this.description = request.description();
-        }
-
-        if(request.status() != null){
-            this.status = request.status();
-        }
-
-        if(request.dueDate() != null){
-            this.dueDate = request.dueDate();
-        }
-    }
 
 }
