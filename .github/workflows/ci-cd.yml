@@ -1,0 +1,76 @@
+name: Java API CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - developer
+  pull_request:
+    branches:
+      - main
+      - developer
+
+jobs:
+  # ---------------------------------------------------
+  # ETAPA 1: INTEGRAÇÃO CONTÍNUA (CI) - Roda em ambas as branches
+  # ---------------------------------------------------
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Dar permissão de execução para o Maven Wrapper
+        run: chmod +x ./mvnw
+
+      - name: Compilar o projeto e rodar testes
+        run: ./mvnw clean verify
+
+  # ---------------------------------------------------
+  # ETAPA 2: ENTREGA CONTÍNUA (CD) - Roda APENAS na main
+  # ---------------------------------------------------
+  build-docker-and-deploy:
+    name: Build Docker Image and Deploy
+    needs: build-and-test # Só roda se o build passar
+    if: github.ref == 'refs/heads/main' # Bloqueia a execução na branch developer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build e Push da Imagem Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/task-api:latest
+
+      # Aqui entraria o script para conectar no seu servidor Linux e fazer o deploy
+      # - name: Deploy no Servidor
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     key: ${{ secrets.SERVER_SSH_KEY }}
+      #     script: |
+      #       docker pull ${{ secrets.DOCKERHUB_USERNAME }}/task-api:latest
+      #       docker-compose up -d --build
