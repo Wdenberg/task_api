@@ -51,7 +51,7 @@ public class AuthController {
         User newUser = User.builder()
                 .name(registerRequest.name())
                 .email(registerRequest.email())
-                .password(registerRequest.password())
+                .password(encryptedPassword)
                 .build();
 
         this.userRepository.save(newUser);
