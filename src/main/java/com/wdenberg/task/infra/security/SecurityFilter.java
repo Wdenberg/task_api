@@ -14,39 +14,93 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+
 @Component
 @RequiredArgsConstructor
-public class SecurityFilter  extends OncePerRequestFilter {
+public class SecurityFilter extends OncePerRequestFilter {
 
-    private final TokeService tokeService;
+
+    private final TokenService tokenService;
     private final UserRepository userRepository;
 
 
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
-        var token = this.recoverToken(request);
-        if(token != null){
-            var login = tokeService.validateToken(token);
 
-            if(!login.isEmpty()){
-                UserDetails user = userRepository.findByEmail(login);
+        String token = recoverToken(request);
 
-                if(user != null){
-                    var authetication = new UsernamePasswordAuthenticationToken(user, null , user.getAuthorities());
 
-                    // Salva as informações do usuário autenticado no contexto da requisição atual
-                    SecurityContextHolder.getContext().setAuthentication(authetication);
-                }
-            }
+        if (token != null) {
+
+            authenticateUser(token);
         }
-        filterChain.doFilter(request, response);
 
+
+        filterChain.doFilter(request, response);
     }
 
-    private String recoverToken(HttpServletRequest request){
-        var autHeader = request.getHeader("authorization");
-        if(autHeader == null) return  null;
-        return autHeader.replace("Bearer ", "");
+
+
+    private void authenticateUser(String token) {
+
+        try {
+
+            String email = tokenService.validateToken(token);
+
+
+            if (email == null) {
+                return;
+            }
+
+
+            UserDetails user =
+                    userRepository.findByEmail(email);
+
+
+            if (user == null) {
+                return;
+            }
+
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            user,
+                            null,
+                            user.getAuthorities()
+                    );
+
+
+            SecurityContextHolder
+                    .getContext()
+                    .setAuthentication(authentication);
+
+
+        } catch (Exception exception) {
+
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+
+
+    private String recoverToken(HttpServletRequest request) {
+
+        String authorization = request.getHeader("Authorization");
+
+
+        if (authorization == null ||
+                !authorization.startsWith("Bearer ")) {
+
+            return null;
+        }
+
+
+        return authorization.substring(7);
     }
 }
