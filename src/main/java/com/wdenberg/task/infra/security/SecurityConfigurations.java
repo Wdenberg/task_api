@@ -1,6 +1,5 @@
 package com.wdenberg.task.infra.security;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +23,7 @@ public class SecurityConfigurations {
 
 
     private final SecurityFilter securityFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
 
     @Bean
@@ -31,107 +31,68 @@ public class SecurityConfigurations {
 
         return http
 
-                // API usando JWT não precisa de CSRF
                 .csrf(AbstractHttpConfigurer::disable)
 
-
-                // Não cria sessão no servidor
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
 
-
-                // Tratamento correto de autenticação
                 .exceptionHandling(exception -> exception
 
-                        // Token ausente, expirado ou inválido
+                        // JWT ausente, inválido ou expirado
                         .authenticationEntryPoint(
-                                (request, response, authException) -> {
-
-                                    response.setStatus(
-                                            HttpServletResponse.SC_UNAUTHORIZED
-                                    );
-
-                                    response.setContentType(
-                                            "application/json"
-                                    );
-
-                                    response.getWriter()
-                                            .write("""
-                                            {
-                                                "status": 401,
-                                                "message": "Token inválido ou expirado"
-                                            }
-                                            """);
-                                }
+                                jwtAuthenticationEntryPoint
                         )
 
-                        // Usuário autenticado mas sem permissão
+                        // Usuário autenticado sem permissão
                         .accessDeniedHandler(
                                 (request, response, accessDeniedException) -> {
 
-                                    response.setStatus(
-                                            HttpServletResponse.SC_FORBIDDEN
-                                    );
-
+                                    response.setStatus(403);
                                     response.setContentType(
-                                            "application/json"
+                                            "application/json;charset=UTF-8"
                                     );
 
-                                    response.getWriter()
-                                            .write("""
-                                            {
-                                                "status": 403,
-                                                "message": "Acesso negado"
-                                            }
-                                            """);
+                                    response.getWriter().write("""
+                                    {
+                                        "status":403,
+                                        "message":"Acesso negado"
+                                    }
+                                    """);
                                 }
                         )
                 )
 
-
                 .authorizeHttpRequests(auth -> auth
 
-
-                        // Login público
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/auth/login"
                         ).permitAll()
 
-
-                        // Cadastro público
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/auth/register"
                         ).permitAll()
 
-
-                        // Swagger público
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-
-                        // Qualquer outro endpoint exige JWT
                         .anyRequest().authenticated()
                 )
 
-
-                // Nosso filtro JWT roda antes do filtro padrão
                 .addFilterBefore(
                         securityFilter,
                         UsernamePasswordAuthenticationFilter.class
                 )
 
-
                 .build();
     }
-
 
 
     @Bean
@@ -141,7 +102,6 @@ public class SecurityConfigurations {
 
         return configuration.getAuthenticationManager();
     }
-
 
 
     @Bean

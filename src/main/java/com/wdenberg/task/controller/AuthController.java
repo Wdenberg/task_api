@@ -5,7 +5,7 @@ import com.wdenberg.task.domain.repository.UserRepository;
 import com.wdenberg.task.dto.AuthenticationRequest;
 import com.wdenberg.task.dto.LoginResponse;
 import com.wdenberg.task.dto.RegisterRequest;
-import com.wdenberg.task.infra.security.TokeService;
+import com.wdenberg.task.infra.security.TokenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
-    private  final TokeService tokeService;
+    private  final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -35,7 +35,7 @@ public class AuthController {
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
         // Se a senha estiver correta, geramos o token JWT
-        var token = tokeService.generateToken((User) auth.getPrincipal());
+        var token = tokenService.generateToken((User) auth.getPrincipal());
         return  ResponseEntity.ok(new LoginResponse(token));
     }
 
