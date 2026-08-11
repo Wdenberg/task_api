@@ -19,4 +19,10 @@ public record TaskCreteRequest(
 
         @FutureOrPresent(message = "A Data de conclusão deve ser no presente ou no futuro")
         LocalDateTime dueDate
-) { }
+) {
+
+        // Construtor secundário para manter compatibilidade com 3 parâmetros
+        public TaskCreteRequest(String title, String description, LocalDateTime dueDate) {
+                this(title, description, TaskPriority.MEDIUM, dueDate);
+        }
+}
