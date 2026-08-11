@@ -2,6 +2,7 @@ package com.wdenberg.task.service;
 
 
 import com.wdenberg.task.domain.model.Task;
+import com.wdenberg.task.domain.model.TaskPriority;
 import com.wdenberg.task.domain.model.TaskStatus;
 import com.wdenberg.task.domain.model.User;
 import com.wdenberg.task.domain.repository.TaskRepository;
@@ -53,6 +54,13 @@ public class TaskService {
         Task task = getTaskOrThrow(id);
         return TaskResponse.fromEntity(task);
     }
+    public List<TaskResponse> findByPriority(TaskPriority priority){
+        User user = getAuthenticationUser();
+        return taskRepository.findByUserIdAndPriority(user.getId(), priority)
+                .stream()
+                .map(TaskResponse::fromEntity)
+                .toList();
+    }
 
     public List<TaskResponse> findByStatus(TaskStatus status){
         User user = getAuthenticationUser();
@@ -62,6 +70,7 @@ public class TaskService {
                 .toList();
     }
 
+
     @Transactional
     public TaskResponse create(TaskCreteRequest request){
         User user = getAuthenticationUser();
@@ -69,6 +78,7 @@ public class TaskService {
                 .description(request.description())
                 .dueDate(request.dueDate())
                 .status(TaskStatus.PENDING)
+                .priority(request.priority() != null ? request.priority() : TaskPriority.MEDIUM)
                 .user(user)
                 .build();
         Task saveTask = taskRepository.save(task);
@@ -83,6 +93,7 @@ public class TaskService {
         if (request.description() != null) task.setDescription(request.description());
         if (request.status() != null) task.setStatus(request.status());
         if (request.dueDate() != null) task.setDueDate(request.dueDate());
+        if(request.priority() != null) task.setPriority(request.priority());
 
         return TaskResponse.fromEntity(task);
     }

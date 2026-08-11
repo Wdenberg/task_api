@@ -1,6 +1,7 @@
 package com.wdenberg.task.dto;
 
 import com.wdenberg.task.domain.model.Task;
+import com.wdenberg.task.domain.model.TaskPriority;
 import com.wdenberg.task.domain.model.TaskStatus;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public record TaskResponse(
         String title,
         String description,
         TaskStatus status,
+        TaskPriority priority,
         LocalDateTime dueDate,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -21,6 +23,7 @@ public record TaskResponse(
                 task.getTitle(),
                 task.getDescription(),
                 task.getStatus(),
+                task.getPriority(),
                 task.getDueDate(),
                 task.getCreatedAt(),
                 task.getUpdatedAt()

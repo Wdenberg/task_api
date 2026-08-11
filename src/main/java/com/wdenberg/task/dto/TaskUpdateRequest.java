@@ -1,5 +1,6 @@
 package com.wdenberg.task.dto;
 
+import com.wdenberg.task.domain.model.TaskPriority;
 import com.wdenberg.task.domain.model.TaskStatus;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ public record TaskUpdateRequest(
         String description,
 
         TaskStatus status,
+        TaskPriority priority,
 
         @FutureOrPresent(message = "A Data de conclusão deve ser no presente ou no futuro")
         LocalDateTime dueDate

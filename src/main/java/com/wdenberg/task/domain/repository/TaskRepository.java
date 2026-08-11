@@ -1,6 +1,7 @@
 package com.wdenberg.task.domain.repository;
 
 import com.wdenberg.task.domain.model.Task;
+import com.wdenberg.task.domain.model.TaskPriority;
 import com.wdenberg.task.domain.model.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,7 @@ public interface TaskRepository  extends JpaRepository<Task, UUID> {
     Optional<Task> findByIdAndUserId(UUID id, UUID userId);
 
     List<Task> findByUserIdAndStatus(UUID userId, TaskStatus status);
+    List<Task> findByUserIdAndPriority(UUID userId, TaskPriority priority);
 
     /*
     // Busca Task por Status(Ex: trazer só as pendentes)

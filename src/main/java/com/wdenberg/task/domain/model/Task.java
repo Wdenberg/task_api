@@ -45,6 +45,10 @@ public class Task {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskPriority priority;
+
 
     // CallBacks de Ciclo de vida JPA
 
@@ -53,6 +57,9 @@ public class Task {
         this.createdAt = LocalDateTime.now();
         if(this.status == null){
             this.status = TaskStatus.PENDING;
+        }
+        if(this.priority == null){
+            this.priority = TaskPriority.MEDIUM;
         }
     }
 

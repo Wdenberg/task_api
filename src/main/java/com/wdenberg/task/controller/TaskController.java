@@ -1,5 +1,6 @@
 package com.wdenberg.task.controller;
 
+import com.wdenberg.task.domain.model.TaskPriority;
 import com.wdenberg.task.domain.model.TaskStatus;
 import com.wdenberg.task.dto.TaskCreteRequest;
 import com.wdenberg.task.dto.TaskResponse;
@@ -58,6 +59,12 @@ public class TaskController {
             @PathVariable TaskStatus status
             ){
         return ResponseEntity.ok(taskService.findByStatus(status));
+    }
+    @Operation(summary = "Filtra Tarefas Por Prioaridades", description = "Retorna tarefas filtrando por LOW, MEDIUN, HIGH, URGENT")
+    @GetMapping("/priority/{priority}")
+    public ResponseEntity<List<TaskResponse>> getTaskByPriority(@PathVariable TaskPriority priority){
+        return ResponseEntity.ok(taskService.findByPriority(priority));
+
     }
 
     @Operation(summary = "Criar nova tarefa", description = "Cria um novo registro de tarefa no banco de dados com status inicial PENDING.")
