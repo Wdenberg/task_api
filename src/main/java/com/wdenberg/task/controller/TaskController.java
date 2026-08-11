@@ -1,6 +1,8 @@
 package com.wdenberg.task.controller;
 
+import com.wdenberg.task.domain.model.TaskPriority;
 import com.wdenberg.task.domain.model.TaskStatus;
+import com.wdenberg.task.dto.SubtaskCreateRequest;
 import com.wdenberg.task.dto.TaskCreteRequest;
 import com.wdenberg.task.dto.TaskResponse;
 import com.wdenberg.task.dto.TaskUpdateRequest;
@@ -59,6 +61,12 @@ public class TaskController {
             ){
         return ResponseEntity.ok(taskService.findByStatus(status));
     }
+    @Operation(summary = "Filtra Tarefas Por Prioaridades", description = "Retorna tarefas filtrando por LOW, MEDIUN, HIGH, URGENT")
+    @GetMapping("/priority/{priority}")
+    public ResponseEntity<List<TaskResponse>> getTaskByPriority(@PathVariable TaskPriority priority){
+        return ResponseEntity.ok(taskService.findByPriority(priority));
+
+    }
 
     @Operation(summary = "Criar nova tarefa", description = "Cria um novo registro de tarefa no banco de dados com status inicial PENDING.")
     @ApiResponses(value = {
@@ -104,5 +112,31 @@ public class TaskController {
     @PatchMapping("/{id}/complete")
     public ResponseEntity<TaskResponse> completeTask(@PathVariable UUID id){
         return ResponseEntity.ok(taskService.completeTask(id));
+    }
+
+
+    //Sub Tarefas pra a Task Principal
+    @Operation(summary = "Adicionar subtarefa", description = "Adiciona um item de checklist a uma tarefa específica.")
+    @PostMapping("/{id}/subtasks")
+    public ResponseEntity<TaskResponse> addSubtask(
+            @PathVariable UUID id,
+            @Valid @RequestBody SubtaskCreateRequest request) {
+        return ResponseEntity.ok(taskService.addSubtask(id, request));
+    }
+
+    @Operation(summary = "Alternar status da subtarefa", description = "Marca ou desmarca uma subtarefa como concluída.")
+    @PatchMapping("/{taskId}/subtasks/{subtaskId}/toggle")
+    public ResponseEntity<TaskResponse> toggleSubtask(
+            @PathVariable UUID taskId,
+            @PathVariable UUID subtaskId) {
+        return ResponseEntity.ok(taskService.toggleSubtask(taskId, subtaskId));
+    }
+
+    @Operation(summary = "Remover subtarefa", description = "Exclui um item específico do checklist.")
+    @DeleteMapping("/{taskId}/subtasks/{subtaskId}")
+    public ResponseEntity<TaskResponse> removeSubtask(
+            @PathVariable UUID taskId,
+            @PathVariable UUID subtaskId) {
+        return ResponseEntity.ok(taskService.removeSubtask(taskId, subtaskId));
     }
 }

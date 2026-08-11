@@ -1,5 +1,6 @@
 package com.wdenberg.task.dto;
 
+import com.wdenberg.task.domain.model.TaskPriority;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,7 @@ public record TaskCreteRequest(
 
         @Size(max = 500, message = "A descrição não pode exceder mais de 500 caracteres")
         String description,
+        TaskPriority priority,
 
         @FutureOrPresent(message = "A Data de conclusão deve ser no presente ou no futuro")
         LocalDateTime dueDate

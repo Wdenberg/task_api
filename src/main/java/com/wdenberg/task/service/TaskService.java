@@ -1,10 +1,9 @@
 package com.wdenberg.task.service;
 
 
-import com.wdenberg.task.domain.model.Task;
-import com.wdenberg.task.domain.model.TaskStatus;
-import com.wdenberg.task.domain.model.User;
+import com.wdenberg.task.domain.model.*;
 import com.wdenberg.task.domain.repository.TaskRepository;
+import com.wdenberg.task.dto.SubtaskCreateRequest;
 import com.wdenberg.task.dto.TaskCreteRequest;
 import com.wdenberg.task.dto.TaskResponse;
 import com.wdenberg.task.dto.TaskUpdateRequest;
@@ -53,6 +52,13 @@ public class TaskService {
         Task task = getTaskOrThrow(id);
         return TaskResponse.fromEntity(task);
     }
+    public List<TaskResponse> findByPriority(TaskPriority priority){
+        User user = getAuthenticationUser();
+        return taskRepository.findByUserIdAndPriority(user.getId(), priority)
+                .stream()
+                .map(TaskResponse::fromEntity)
+                .toList();
+    }
 
     public List<TaskResponse> findByStatus(TaskStatus status){
         User user = getAuthenticationUser();
@@ -62,6 +68,7 @@ public class TaskService {
                 .toList();
     }
 
+
     @Transactional
     public TaskResponse create(TaskCreteRequest request){
         User user = getAuthenticationUser();
@@ -69,6 +76,7 @@ public class TaskService {
                 .description(request.description())
                 .dueDate(request.dueDate())
                 .status(TaskStatus.PENDING)
+                .priority(request.priority() != null ? request.priority() : TaskPriority.MEDIUM)
                 .user(user)
                 .build();
         Task saveTask = taskRepository.save(task);
@@ -83,6 +91,7 @@ public class TaskService {
         if (request.description() != null) task.setDescription(request.description());
         if (request.status() != null) task.setStatus(request.status());
         if (request.dueDate() != null) task.setDueDate(request.dueDate());
+        if(request.priority() != null) task.setPriority(request.priority());
 
         return TaskResponse.fromEntity(task);
     }
@@ -98,6 +107,46 @@ public class TaskService {
         Task task = getTaskOrThrow(id);
         task.setStatus(TaskStatus.COMPLETED);
         return  TaskResponse.fromEntity(task);
+    }
+
+    @Transactional
+    public TaskResponse addSubtask(UUID taskId, SubtaskCreateRequest request){
+        Task task = getTaskOrThrow(taskId);
+        Subtask subtask = Subtask.builder()
+                .title(request.title())
+                .task(task)
+                .completed(false)
+                .build();
+
+        task.getSubtasks().add(subtask);
+
+        taskRepository.save(task);
+        return TaskResponse.fromEntity(task);
+    }
+    @Transactional
+    public TaskResponse toggleSubtask(UUID taskId, UUID subtaskId) {
+        Task task = getTaskOrThrow(taskId);
+
+        Subtask targetSubtask = task.getSubtasks().stream()
+                .filter(st -> st.getId().equals(subtaskId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Subtarefa não encontrada nesta tarefa"));
+
+        targetSubtask.setCompleted(!targetSubtask.isCompleted()); // Inverte o status
+
+        taskRepository.save(task);
+        return TaskResponse.fromEntity(task);
+    }
+
+    @Transactional
+    public TaskResponse removeSubtask(UUID taskId, UUID subtaskId) {
+        Task task = getTaskOrThrow(taskId);
+
+        task.getSubtasks().removeIf(st -> st.getId().equals(subtaskId));
+
+        // O orphanRemoval = true na Entity vai deletar a subtask do banco de dados automaticamente
+        taskRepository.save(task);
+        return TaskResponse.fromEntity(task);
     }
 
     /*
