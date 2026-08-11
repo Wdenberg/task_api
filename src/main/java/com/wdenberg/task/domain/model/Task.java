@@ -1,11 +1,12 @@
 package com.wdenberg.task.domain.model;
 
 
-import com.wdenberg.task.dto.TaskUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -48,6 +49,9 @@ public class Task {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TaskPriority priority;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Subtask> subtasks = new ArrayList<>();
 
 
     // CallBacks de Ciclo de vida JPA
