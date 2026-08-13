@@ -19,8 +19,12 @@ public record TaskResponse(
         LocalDateTime updatedAt,
         List<SubtaskResponse> subtasks
 ) {
-    public  static TaskResponse fromEntity(Task task){
-        return  new TaskResponse(
+    public static TaskResponse fromEntity(Task task) {
+        List<SubtaskResponse> subtaskResponses = task.getSubtasks() != null
+                ? task.getSubtasks().stream().map(SubtaskResponse::fromEntity).toList()
+                : List.of();
+
+        return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
@@ -29,7 +33,7 @@ public record TaskResponse(
                 task.getDueDate(),
                 task.getCreatedAt(),
                 task.getUpdatedAt(),
-                task.getSubtasks().stream().map(SubtaskResponse::fromEntity).toList()
+                subtaskResponses
         );
     }
 }
